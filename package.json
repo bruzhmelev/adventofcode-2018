@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/bruzhmelev/adventofcode-2018#readme",
   "devDependencies": {
-    "ts-node": "^7.0.1"
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.1"
   }
 }

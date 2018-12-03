@@ -259,35 +259,93 @@ aabcdd
 abcdee
 ababab`;
 
-function countChecksum (input: string) {
+function countResult (input: string) {
     const inputArr = input.split('\n');
-    let twoTimesCounter = 0;
-    let threeTimesCounter = 0;
+    let resultsArr: BoxIdResult[] = [];
     inputArr.forEach((boxId) => {
-        if (isIncludeTwoOfAny(boxId)) {
-            twoTimesCounter++;
-        }
-        if (isIncludeThreeOfAny(boxId)) {
-            threeTimesCounter++;
-        }
+        let boxIdResult = isIncludeNthOfAny(boxId);
+        resultsArr.push(boxIdResult);
     });
 
-    return inputArr;
+    return resultsArr;
 }
 
-function isIncludeTwoOfAny(boxId: string): boolean {
-    boxId.split('').forEach(char => {
-        if(boxId.indexOf(char) === -1){
+function calcChecksum ( boxIdResults: BoxIdResult[] ):{twoCount:number, threeCount:number} {
+    let countOfTwice = 0;
+    let countOfThrice = 0;
+    boxIdResults.forEach(res => {
+        if(res.two){
+            countOfTwice++;
+        }
+        if(res.three){
+            countOfThrice++;
+        }
+    });
+    return {twoCount: countOfTwice, threeCount: countOfThrice}
+}
+
+function isIncludeNthOfAny(boxId: string): BoxIdResult {
+    let result = {two: false, three: false};
+    let searchedChars = {};
+    boxId.split('').forEach((char, charIndex) => {
+        if(result.two && result.three){
             return;
+        }
+        if(searchedChars[char] === true){
+            return;
+        }
+        searchedChars[char] = true;
+
+        let charCounter = 1;
+        const firstSearch = boxId.indexOf(char, charIndex + 1);
+        if(firstSearch !== -1){
+            charCounter = 2;
+
+            const secondSearch = boxId.indexOf(char, firstSearch + 1);
+            if(secondSearch !== -1){
+                charCounter = 3;
+
+                const thirdSearch = boxId.indexOf(char, secondSearch + 1);
+                if(thirdSearch !== -1){
+                    charCounter = 4;
+                }
+            }
         };
 
+        if(charCounter === 1 || charCounter === 4){
+            return;
+        }else if(charCounter === 2){
+            result.two = true;
+        }else if(charCounter === 3){
+            result.three = true;
+        }else{
+            throw new Error('Unexpected charCounter value');
+        }
     });
-    return false;
+    return result;
 }
 
-function isIncludeThreeOfAny(boxId): boolean {
-    return false;    
+interface BoxIdResult {
+    two: boolean, 
+    three: boolean
 }
 
-// TEST
-console.log(countChecksum(testInput));
+// TESTS
+const resTest = countResult(testInput);
+console.log(resTest[0].two === false && resTest[0].three === false);
+console.log(resTest[1].two === true && resTest[1].three === true);
+console.log(resTest[2].two === true && resTest[2].three === false);
+console.log(resTest[3].two === false && resTest[3].three === true);
+console.log(resTest[4].two === true && resTest[4].three === false);
+console.log(resTest[5].two === true && resTest[5].three === false);
+console.log(resTest[6].two === false && resTest[6].three === true);
+
+const calcResTest = calcChecksum(resTest);
+console.log(calcResTest);
+
+console.log('finalRes: ', calcResTest.twoCount * calcResTest.threeCount);
+
+
+const res = countResult(input);
+const calcRes = calcChecksum(res);
+console.log('finalRes: ', calcRes.twoCount * calcRes.threeCount);
