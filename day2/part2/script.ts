@@ -261,15 +261,48 @@ wvxyz`;
 
 function countResult (input: string) {
     const inputArr = input.split('\n');
+    let result = null;
+    inputArr.forEach((mainBoxId, mainBoxIdIndex) => {
+        if (result !== null){
+            return;
+        }
+        inputArr.slice(mainBoxIdIndex + 1).forEach(comparingBoxId => {
+            if (result !== null){
+                return;
+            }
+            if (differByOneChar(mainBoxId, comparingBoxId)){
+                console.log({mainBoxId, comparingBoxId});
+                // result = {mainBoxId, comparingBoxId};
+            }
+        });
+    });
+    return result;
+}
 
+function differByOneChar (strOne: string, strTwo: string): boolean {
+    let diffCounter = 0;
+    strOne.split('').forEach((sOneChar, index) => {
+        if(diffCounter > 1) {
+            return; 
+        }
+        if(sOneChar !== strTwo[index]){
+            diffCounter++;
+        }
+    });
+
+    if(diffCounter === 1){
+        console.log(strOne, " ", strTwo);
+        return true;
+    }else{
+        return false;
+    }
 }
 
 // TESTS
-const resTest = countResult(testInput);
-console.log(resTest[0].two === false && resTest[0].three === false);
-console.log(resTest[1].two === true && resTest[1].three === true);
-console.log(resTest[2].two === true && resTest[2].three === false);
-console.log(resTest[3].two === false && resTest[3].three === true);
-console.log(resTest[4].two === true && resTest[4].three === false);
-console.log(resTest[5].two === true && resTest[5].three === false);
-console.log(resTest[6].two === false && resTest[6].three === true);
+console.log(countResult(input));
+// const resTest = countResult(testInput);
+// bqlporuexkwzyabnxmgjqctvfs
+// bqlporuexkwzyabnzmgjqctvfs
+// bqlporuexkwzyabnmgjqctvfs
+
+
